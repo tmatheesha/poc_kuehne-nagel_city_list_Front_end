@@ -14,8 +14,25 @@ const citiesLoadError = (errorMessage) => ({
     payload: errorMessage,
 });
 
+const cityUpdateStart = () => ({
+    type: actionTypes.CITY_UPDATE_START,
+});
+
+const cityUpdateSuccess = (users) => ({
+    type: actionTypes.CITY_UPDATE_SUCCESS,
+    payload: users,
+});
+
+const cityUpdateError = (errorMessage) => ({
+    type: actionTypes.CITY_UPDATE_ERROR,
+    payload: errorMessage,
+});
+
 export default {
     citiesLoadStart,
     citiesLoadSuccess,
     citiesLoadError,
+    cityUpdateStart,
+    cityUpdateSuccess,
+    cityUpdateError
 };

@@ -21,11 +21,11 @@ import {
   Progress,
   Button,
   Avatar,
-  Typography, Input,
+  Typography, Input, Space, Form, Popconfirm, InputNumber,
 } from "antd";
 
 import {SearchOutlined, ToTopOutlined} from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link ,useHistory} from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 // Images
@@ -41,570 +41,184 @@ import face4 from "../assets/images/face-4.jpg";
 import face5 from "../assets/images/face-5.jpeg";
 import face6 from "../assets/images/face-6.jpeg";
 import pencil from "../assets/images/pencil.svg";
-import {loadCitiesAsync} from "../redux/reducers/cities/cities.thunk";
+import {loadCitiesAsync, updateCityAsync} from "../redux/reducers/cities/cities.thunk";
 import ViewBoxFooter from "../components/viewBoxFooter";
+import FormOutlined from "@ant-design/icons/lib/icons/FormOutlined";
+import LoadingOutlined from "@ant-design/icons/lib/icons/LoadingOutlined";
+import PlusOutlined from "@ant-design/icons/lib/icons/PlusOutlined";
 
 const { Title } = Typography;
+const { Search } = Input;
 
-const formProps = {
-  name: "file",
-  action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
-  headers: {
-    authorization: "authorization-text",
-  },
-  onChange(info) {
-    if (info.file.status !== "uploading") {
-      console.log(info.file, info.fileList);
-    }
-    if (info.file.status === "done") {
-      message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === "error") {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-};
-// table code start
-const columns = [
-  {
-    title: "Id",
-    dataIndex: "id",
-    key: "id",
-    width: "32%",
-  },
-  {
-    title: "AUTHOR",
-    dataIndex: "picture",
-    key: "picture",
-    width: "32%",
-  },
-  {
-    title: "NAME",
-    dataIndex: "name",
-    key: "name",
-  },
 
-  /*{
-    title: "STATUS",
-    key: "status",
-    dataIndex: "status",
-  },*/
-  {
-    title: "EMPLOYED",
-    key: "employed",
-    dataIndex: "employed",
-  },
-];
-
-const data = [
-  {
-    key: "1",
-    name: (
-      <>
-        <Avatar.Group>
-          <Avatar
-            className="shape-avatar"
-            shape="square"
-            size={40}
-            src={face2}
-          ></Avatar>
-          <div className="avatar-info">
-            <Title level={5}>Michael John</Title>
-            <p>michael@mail.com</p>
-          </div>
-        </Avatar.Group>{" "}
-      </>
-    ),
-    function: (
-      <>
-        <div className="author-info">
-          <Title level={5}>Manager</Title>
-          <p>Organization</p>
-        </div>
-      </>
-    ),
-
-    status: (
-      <>
-        <Button type="primary" className="tag-primary">
-          ONLINE
-        </Button>
-      </>
-    ),
-    employed: (
-      <>
-        <div className="ant-employed">
-          <span>23/04/18</span>
-          <a href="#pablo">Edit</a>
-        </div>
-      </>
-    ),
-  },
-
-  {
-    key: "2",
-    name: (
-      <>
-        <Avatar.Group>
-          <Avatar
-            className="shape-avatar"
-            shape="square"
-            size={40}
-            src={face3}
-          ></Avatar>
-          <div className="avatar-info">
-            <Title level={5}>Alexa Liras</Title>
-            <p>alexa@mail.com</p>
-          </div>
-        </Avatar.Group>{" "}
-      </>
-    ),
-    function: (
-      <>
-        <div className="author-info">
-          <Title level={5}>Programator</Title>
-          <p>Developer</p>
-        </div>
-      </>
-    ),
-
-    status: (
-      <>
-        <Button className="tag-badge">ONLINE</Button>
-      </>
-    ),
-    employed: (
-      <>
-        <div className="ant-employed">
-          <span>23/12/20</span>
-          <a href="#pablo">Edit</a>
-        </div>
-      </>
-    ),
-  },
-
-  {
-    key: "3",
-    name: (
-      <>
-        <Avatar.Group>
-          <Avatar
-            className="shape-avatar"
-            shape="square"
-            size={40}
-            src={face}
-          ></Avatar>
-          <div className="avatar-info">
-            <Title level={5}>Laure Perrier</Title>
-            <p>laure@mail.com</p>
-          </div>
-        </Avatar.Group>{" "}
-      </>
-    ),
-    function: (
-      <>
-        <div className="author-info">
-          <Title level={5}>Executive</Title>
-          <p>Projects</p>
-        </div>
-      </>
-    ),
-
-    status: (
-      <>
-        <Button type="primary" className="tag-primary">
-          ONLINE
-        </Button>
-      </>
-    ),
-    employed: (
-      <>
-        <div className="ant-employed">
-          <span>03/04/21</span>
-          <a href="#pablo">Edit</a>
-        </div>
-      </>
-    ),
-  },
-  {
-    key: "4",
-    name: (
-      <>
-        <Avatar.Group>
-          <Avatar
-            className="shape-avatar"
-            shape="square"
-            size={40}
-            src={face4}
-          ></Avatar>
-          <div className="avatar-info">
-            <Title level={5}>Miriam Eric</Title>
-            <p>miriam@mail.com</p>
-          </div>
-        </Avatar.Group>{" "}
-      </>
-    ),
-    function: (
-      <>
-        <div className="author-info">
-          <Title level={5}>Marketing</Title>
-          <p>Organization</p>
-        </div>
-      </>
-    ),
-
-    status: (
-      <>
-        <Button type="primary" className="tag-primary">
-          ONLINE
-        </Button>
-      </>
-    ),
-    employed: (
-      <>
-        <div className="ant-employed">
-          <span>03/04/21</span>
-          <a href="#pablo">Edit</a>
-        </div>
-      </>
-    ),
-  },
-  {
-    key: "5",
-    name: (
-      <>
-        <Avatar.Group>
-          <Avatar
-            className="shape-avatar"
-            shape="square"
-            size={40}
-            src={face5}
-          ></Avatar>
-          <div className="avatar-info">
-            <Title level={5}>Richard Gran</Title>
-            <p>richard@mail.com</p>
-          </div>
-        </Avatar.Group>{" "}
-      </>
-    ),
-    function: (
-      <>
-        <div className="author-info">
-          <Title level={5}>Manager</Title>
-          <p>Organization</p>
-        </div>
-      </>
-    ),
-
-    status: (
-      <>
-        <Button className="tag-badge">ONLINE</Button>
-      </>
-    ),
-    employed: (
-      <>
-        <div className="ant-employed">
-          <span>23/03/20</span>
-          <a href="#pablo">Edit</a>
-        </div>
-      </>
-    ),
-  },
-
-  {
-    key: "6",
-    name: (
-      <>
-        <Avatar.Group>
-          <Avatar
-            className="shape-avatar"
-            shape="square"
-            size={40}
-            src={face6}
-          ></Avatar>
-          <div className="avatar-info">
-            <Title level={5}>John Levi</Title>
-            <p>john@mail.com</p>
-          </div>
-        </Avatar.Group>{" "}
-      </>
-    ),
-    function: (
-      <>
-        <div className="author-info">
-          <Title level={5}>Tester</Title>
-          <p>Developer</p>
-        </div>
-      </>
-    ),
-
-    status: (
-      <>
-        <Button className="tag-badge">ONLINE</Button>
-      </>
-    ),
-    employed: (
-      <>
-        <div className="ant-employed">
-          <span>14/04/17</span>
-          <a href="#pablo">Edit</a>
-        </div>
-      </>
-    ),
-  },
-];
 // project table start
-const project = [
-  {
-    title: "COMPANIES",
-    dataIndex: "name",
-    width: "32%",
-  },
-  {
-    title: "BUDGET",
-    dataIndex: "age",
-  },
-  {
-    title: "STATUS",
-    dataIndex: "address",
-  },
-  {
-    title: "COMPLETION",
-    dataIndex: "completion",
-  },
-];
-const dataproject = [
-  {
-    key: "1",
 
-    name: (
-      <>
-        <Avatar.Group>
-          <Avatar className="shape-avatar" src={ava1} size={25} alt="" />
-          <div className="avatar-info">
-            <Title level={5}>Spotify Version</Title>
-          </div>
-        </Avatar.Group>
-      </>
-    ),
-    age: (
-      <>
-        <div className="semibold">$14,000</div>
-      </>
-    ),
-    address: (
-      <>
-        <div className="text-sm">working</div>
-      </>
-    ),
-    completion: (
-      <>
-        <div className="ant-progress-project">
-          <Progress percent={30} size="small" />
-          <span>
-            <Link to="/">
-              <img src={pencil} alt="" />
-            </Link>
-          </span>
-        </div>
-      </>
-    ),
-  },
 
-  {
-    key: "2",
-    name: (
-      <>
-        <Avatar.Group>
-          <Avatar className="shape-avatar" src={ava2} size={25} alt="" />
-          <div className="avatar-info">
-            <Title level={5}>Progress Track</Title>
-          </div>
-        </Avatar.Group>
-      </>
-    ),
-    age: (
-      <>
-        <div className="semibold">$3,000</div>
-      </>
-    ),
-    address: (
-      <>
-        <div className="text-sm">working</div>
-      </>
-    ),
-    completion: (
-      <>
-        <div className="ant-progress-project">
-          <Progress percent={10} size="small" />
-          <span>
-            <Link to="/">
-              <img src={pencil} alt="" />
-            </Link>
-          </span>
-        </div>
-      </>
-    ),
-  },
-
-  {
-    key: "3",
-    name: (
-      <>
-        <Avatar.Group>
-          <Avatar className="shape-avatar" src={ava3} size={25} alt="" />
-          <div className="avatar-info">
-            <Title level={5}> Jira Platform Errors</Title>
-          </div>
-        </Avatar.Group>
-      </>
-    ),
-    age: (
-      <>
-        <div className="semibold">Not Set</div>
-      </>
-    ),
-    address: (
-      <>
-        <div className="text-sm">done</div>
-      </>
-    ),
-    completion: (
-      <>
-        <div className="ant-progress-project">
-          <Progress percent={100} size="small" format={() => "done"} />
-          <span>
-            <Link to="/">
-              <img src={pencil} alt="" />
-            </Link>
-          </span>
-        </div>
-      </>
-    ),
-  },
-
-  {
-    key: "4",
-    name: (
-      <>
-        <Avatar.Group>
-          <Avatar className="shape-avatar" src={ava5} size={25} alt="" />
-          <div className="avatar-info">
-            <Title level={5}> Launch new Mobile App</Title>
-          </div>
-        </Avatar.Group>
-      </>
-    ),
-    age: (
-      <>
-        <div className="semibold">$20,600</div>
-      </>
-    ),
-    address: (
-      <>
-        <div className="text-sm">canceled</div>
-      </>
-    ),
-    completion: (
-      <>
-        <div className="ant-progress-project">
-          <Progress
-            percent={50}
-            size="small"
-            status="exception"
-            format={() => "50%"}
-          />
-          <span>
-            <Link to="/">
-              <img src={pencil} alt="" />
-            </Link>
-          </span>
-        </div>
-      </>
-    ),
-  },
-
-  {
-    key: "5",
-    name: (
-      <>
-        <Avatar.Group>
-          <Avatar className="shape-avatar" src={ava5} size={25} alt="" />
-          <div className="avatar-info">
-            <Title level={5}>Web Dev</Title>
-          </div>
-        </Avatar.Group>
-      </>
-    ),
-    age: (
-      <>
-        <div className="semibold">$4,000</div>
-      </>
-    ),
-    address: (
-      <>
-        <div className="text-sm">working</div>
-      </>
-    ),
-    completion: (
-      <>
-        <div className="ant-progress-project">
-          <Progress percent={80} size="small" />
-          <span>
-            <Link to="/">
-              <img src={pencil} alt="" />
-            </Link>
-          </span>
-        </div>
-      </>
-    ),
-  },
-
-  {
-    key: "6",
-    name: (
-      <>
-        <Avatar.Group>
-          <Avatar className="shape-avatar" src={ava6} size={25} alt="" />
-          <div className="avatar-info">
-            <Title level={5}>Redesign Online Store</Title>
-          </div>
-        </Avatar.Group>
-      </>
-    ),
-    age: (
-      <>
-        <div className="semibold">$2,000</div>
-      </>
-    ),
-    address: (
-      <>
-        <div className="text-sm">canceled</div>
-      </>
-    ),
-    completion: (
-      <>
-        <div className="ant-progress-project">
-          <Progress percent={0} size="small" />
-          <span>
-            <Link to="/">
-              <img src={pencil} alt="" />
-            </Link>
-          </span>
-        </div>
-      </>
-    ),
-  },
-];
+const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
 
 function Tables() {
 
   const dispatch = useDispatch();
+// table code start
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const { isLoading, cities,noOfItems, errorMessage } = useSelector((state) => {
+  const [search, setSearch] = useState("");
+  const { isLoading, cities,noOfItems, errorMessage } = useSelector((state) => state.cities);
 
-    console.log("state ",state);
-    return state.cities;});
+  const [editingKey, setEditingKey] = useState('');
+  const [form] = Form.useForm();
+
+  const isEditing = (record) => record.key === editingKey;
+  const edit = (record) => {
+      console.log("record ",record);
+    form.setFieldsValue({
+      name: record.name,
+      picture: record.picture,
+      ...record,
+    });
+    setEditingKey(record.key);
+    console.log("record ",record);
+    console.log("editingKey ",editingKey);
+    console.log("form ",form)
+  };
+
+  const cancel = () => {
+    setEditingKey('');
+  };
+
+  const save = async (key) => {
+    try {
+      const row = await form.validateFields();
+      const newData = [...cities];
+      let picture = '';
+      const setPicture = (pic) => {
+          picture = pic
+      };
+      // getBase64(row.picture.file,setPicture);
+        picture = await toBase64(row.picture.file);
+        picture = picture.replace('data:image/jpeg;base64,','');
+        console.log("picture ",picture);
+      const city = newData.find((item) => key === item.id);
+
+      if (city != undefined) {
+        // const item = newData[index];
+        // newData.splice(index, 1, { ...item, ...row });
+        // setData(newData);
+        setEditingKey('');
+          console.log("save started",key);
+          dispatch(
+              updateCityAsync({
+                  id: city.id,
+                  updateDto: {
+                      id: city.id,
+                      name: row.name,
+                      picture: picture,
+                  },
+                  requestHeader: {
+                      requestId: "string",
+                      timestamp: "2022-09-30T11:24:11.235Z",
+                      userId: "string",
+                      userName: "string"
+                  }
+              }, {
+                      isDescending: true,
+                      isPaginated: true,
+                      pageNumber: pageNumber,
+                      pageSize: pageSize,
+                      paginationDto: {
+                          searchBy: search
+                      },
+                      requestHeader: {
+                          requestId: "string",
+                          timestamp: "2022-09-30T11:24:11.235Z",
+                          userId: "string",
+                          userName: "string"
+                      }
+                  }
+
+          ));
+      }
+      /*else {
+        newData.push(row);
+        // setData(newData);
+        setEditingKey('');
+      }*/
+    } catch (errInfo) {
+      console.log('Validate Failed:', errInfo);
+    }
+
+  };
+  const columns = [
+    {
+      title: "Id",
+      dataIndex: "id",
+      key: "id",
+      width: "10%",
+      editable: false,
+    },
+    {
+      title: "PICTURE",
+      dataIndex: "picture",
+      key: "picture",
+      width: "32%",
+      editable: true,
+    },
+    {
+      title: "NAME",
+      dataIndex: "name",
+      key: "name",
+      editable: true,
+    },
+    {
+      title: "Action",
+      key: "action",
+      width: "25%",
+      ellipsis: true,
+      render: (record) => {
+        const editable = isEditing(record);
+        return editable ? (
+            <span>
+            <Typography.Link
+                onClick={() => save(record.key)}
+                style={{
+                  marginRight: 8,
+                }}
+            >
+              Save
+            </Typography.Link>
+            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+              <a>Cancel</a>
+            </Popconfirm>
+          </span>
+        ) : (
+            <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
+              Edit
+            </Typography.Link>
+        );
+      },
+    },
+  ];
+  const mergedColumns = columns.map((col) => {
+    if (!col.editable) {
+      return col;
+    }
+
+    return {
+      ...col,
+      onCell: (record) => ({
+        record,
+        inputType: col.dataIndex === 'picture' ? 'upload' : 'text',
+        dataIndex: col.dataIndex,
+        title: col.title,
+        editing: isEditing(record),
+      }),
+    };
+  });
 
   useEffect(() => {
     dispatch(loadCitiesAsync({
@@ -613,7 +227,7 @@ function Tables() {
       pageNumber: pageNumber,
       pageSize: pageSize,
       paginationDto: {
-        searchBy: ""
+        searchBy: search
       },
       requestHeader: {
         requestId: "string",
@@ -623,7 +237,7 @@ function Tables() {
       }
     }
     ));
-  }, [pageNumber]);
+  }, [pageNumber,search]);
   const onChange = (e) => console.log(`radio checked:${e.target.value}`);
   console.log("cities ",cities);
   const newCityList = cities ? cities.map((city) => {
@@ -659,6 +273,166 @@ function Tables() {
       }):[]
   console.log("noOfItems ",noOfItems);
   console.log("isLoading ",isLoading);
+
+  function onSearch(input) {
+    setSearch(input);
+  }
+    const EditableCell = ({
+                              editing,
+                              dataIndex,
+                              title,
+                              inputType,
+                              record,
+                              index,
+                              children,
+                              ...restProps
+                          }) => {
+        console.log("Editable cell")
+        console.log("restProps ",restProps)
+        const [loading, setLoading] = useState(false);
+        const [imageUrl, setImageUrl] = useState('');
+        const getBase64 = (img, callback) => {
+            console.log("img ",img)
+            console.log("callback ",callback)
+            const reader = new FileReader();
+            // reader.addEventListener('load', () => callback(reader.result));
+            // reader.readAsDataURL(img);
+            reader.readAsText(img);
+            console.log("result ",reader.result)
+        };
+
+        const beforeUpload = (file) => {
+            const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+
+            if (!isJpgOrPng) {
+                message.error('You can only upload JPG/PNG file!');
+                return false;
+            }
+
+            const isLt2M = file.size / 1024 / 1024 < 2;
+
+            if (!isLt2M) {
+                message.error('Image must smaller than 2MB!');
+                return false;
+            }
+            const reader = new FileReader();
+
+            reader.onload = e => {
+                console.log("onload ",e.target.result);
+                let picture = e.target.result.replace('data:image/jpeg;base64,','');
+                setImageUrl(picture)
+            };
+            // reader.readAsText(file);
+            reader.readAsDataURL(file);
+            console.log("reader.result ",reader.result);
+            // Prevent upload
+            return false;
+            // return isJpgOrPng && isLt2M;
+        };
+        const handleChange = (info) => {
+            console.log('info', info);
+            if (info.file.status === 'uploading') {
+                setLoading(true);
+                return;
+            }
+
+            if (info.file.status === 'done') {
+                // Get this url from response in real world.
+                getBase64(info.file.originFileObj, (url) => {
+                    setLoading(false);
+                    setImageUrl(url);
+                });
+            }
+            /* if (info.file.status !== 'uploading') {
+               let reader = new FileReader();
+               reader.onload = (e) => {
+                 console.log(e.target.result);
+               };
+               reader.readAsText(info.file.originFileObj);
+             }
+             if (info.file.status === 'done') {
+               message.success(`${info.file.name} file uploaded successfully`);
+             } else if (info.file.status === 'error') {
+               message.error(`${info.file.name} file upload failed.`);
+             }*/
+        };
+
+        const uploadButton = (
+            <div>
+                {loading ? <LoadingOutlined /> : <PlusOutlined />}
+                <div
+                    style={{
+                        marginTop: 8,
+                    }}
+                >
+                    Upload
+                </div>
+            </div>
+        );
+        const uploadPicture = () => {
+
+        };
+        const inputNode = inputType === 'upload' ?
+            <Upload
+                name="picture"
+                listType="picture-card"
+                className="avatar-uploader"
+                showUploadList={false}
+                // action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                //     action={uploadPicture}
+                // beforeUpload={() => false}
+                beforeUpload={beforeUpload}
+                // onChange={handleChange}
+                maxCount={1}
+            >
+                {imageUrl ? (
+                   /* <img
+                        // src={imageUrl}
+                        src={`data:image/png;base64,${imageUrl}`}
+                        alt="avatar"
+                        style={{
+                            width: '100%',
+                        }}
+                    />*/
+                    <Avatar.Group>
+                        <Avatar
+                            className="shape-avatar"
+                            shape="square"
+                            // size={40}
+                            src={`data:image/png;base64,${imageUrl}`}
+                        ></Avatar>
+                        {/* <div className="avatar-info">
+                   <Title level={5}>Michael John</Title>
+                   <p>michael@mail.com</p>
+                 </div>*/}
+                    </Avatar.Group>
+                ) : (
+                    uploadButton
+                )}
+            </Upload> : <Input />;
+        return (
+            <td {...restProps}>
+                {editing ? (
+                    <Form.Item
+                        name={dataIndex}
+                        style={{
+                            margin: 0,
+                        }}
+                        rules={[
+                            {
+                                required: true,
+                                message: `Please Input ${title}!`,
+                            },
+                        ]}
+                    >
+                        {inputNode}
+                    </Form.Item>
+                ) : (
+                    children
+                )}
+            </td>
+        );
+    };
   return (
     <>
       <div className="tabled">
@@ -676,20 +450,25 @@ function Tables() {
                   </Radio.Group>
                 </>*/
 
-                <Input
-                    className="header-search"
-                    placeholder="Type here..."
-                    prefix={<SearchOutlined />}
-                />
+                <Search placeholder="input name to search" enterButton="Search" size="large" loading={isLoading}
+                        onSearch={onSearch}/>
               }
             >
               <div className="table-responsive">
+                  <Form form={form} component={false}>
                 <Table
-                  columns={columns}
+                    components={{
+                      body: {
+                        cell: EditableCell,
+                      },
+                    }}
+                  columns={mergedColumns}
                   dataSource={newCityList}
                   pagination={false}
+                    rowClassName="editable-row"
                   className="ant-border-space"
                 />
+                  </Form>
               </div>
               <div   style ={{float: "right",marginTop: "20px", marginBottom: "10px"}}>
                 <ViewBoxFooter
@@ -708,41 +487,6 @@ function Tables() {
                 />
               </div>
             </Card>
-
-            {/*<Card
-              bordered={false}
-              className="criclebox tablespace mb-24"
-              title="Projects Table"
-              extra={
-                <>
-                  <Radio.Group onChange={onChange} defaultValue="all">
-                    <Radio.Button value="all">All</Radio.Button>
-                    <Radio.Button value="online">ONLINE</Radio.Button>
-                    <Radio.Button value="store">STORES</Radio.Button>
-                  </Radio.Group>
-                </>
-              }
-            >
-              <div className="table-responsive">
-                <Table
-                  columns={project}
-                  dataSource={dataproject}
-                  pagination={false}
-                  className="ant-border-space"
-                />
-              </div>
-              <div className="uploadfile pb-15 shadow-none">
-                <Upload {...formProps}>
-                  <Button
-                    type="dashed"
-                    className="ant-full-box"
-                    icon={<ToTopOutlined />}
-                  >
-                    Click to Upload
-                  </Button>
-                </Upload>
-              </div>
-            </Card>*/}
           </Col>
         </Row>
       </div>
