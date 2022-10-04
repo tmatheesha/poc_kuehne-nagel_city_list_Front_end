@@ -27,6 +27,7 @@ Quick start options:
 
 1. Download and Install NodeJs LTS version from [NodeJs Official Page](https://nodejs.org/en/download/).
 2. Navigate to the root / directory and run npm install or (yarn install, if you're using yarn) to install our local dependencies.
+3. execute the following terminal command. "npm run start"
 
 ## Documentation
 The template for this application was taken from Muse Ant Design Dashboard.
