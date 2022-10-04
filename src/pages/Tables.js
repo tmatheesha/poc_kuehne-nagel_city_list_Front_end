@@ -1,14 +1,3 @@
-/*!
-=========================================================
-* Muse Ant Design Dashboard - v1.0.0
-=========================================================
-* Product Page: https://www.creative-tim.com/product/muse-ant-design-dashboard
-* Copyright 2021 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/muse-ant-design-dashboard/blob/main/LICENSE.md)
-* Coded by Creative Tim
-=========================================================
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
 import React, {useEffect, useState} from "react";
 import {Avatar, Button, Card, Col, Form, Input, message, Popconfirm, Row, Table, Typography, Upload,} from "antd";
 import {useDispatch, useSelector} from "react-redux";
@@ -42,6 +31,7 @@ function Tables() {
     const {isLoading, cities, noOfItems, errorMessage} = useSelector((state) => state.cities);
 
     const [editingKey, setEditingKey] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
     const [form] = Form.useForm();
 
     const isEditing = (record) => record.key === editingKey;
@@ -53,13 +43,21 @@ function Tables() {
             ...record,
         });
         setEditingKey(record.key);
+        let picture = record.originalPicture;
+        picture = picture.replace('data:image/jpeg;base64,', '');
+        picture = picture.replace('data:image/jpg;base64,', '');
+        picture = picture.replace('data:image/png;base64,', '');
+        setImageUrl(picture);
         console.log("record ", record);
         console.log("editingKey ", editingKey);
         console.log("form ", form)
     };
 
-    const cancel = () => {
+    const cancel = (record) => {
+        console.log("cancel record ", record);
         setEditingKey('');
+        setImageUrl('');
+        form.resetFields();
     };
 
     const save = async (key) => {
@@ -74,6 +72,8 @@ function Tables() {
                 picture = await toBase64(row.picture.file);
             }
             picture = picture.replace('data:image/jpeg;base64,', '');
+            picture = picture.replace('data:image/jpg;base64,', '');
+            picture = picture.replace('data:image/png;base64,', '');
 
             if (city != undefined) {
                 setEditingKey('');
@@ -157,7 +157,7 @@ function Tables() {
             >
               Save
             </Typography.Link>
-            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+            <Popconfirm title="Sure to cancel?" onConfirm={() => cancel(record)}>
               <a>Cancel</a>
             </Popconfirm>
           </span>
@@ -203,7 +203,7 @@ function Tables() {
                 }
             }
         ));
-    }, [pageNumber, search]);
+    }, [pageNumber, search,pageSize]);
     const onChange = (e) => console.log(`radio checked:${e.target.value}`);
     console.log("cities ", cities);
     const newCityList = cities ? cities.map((city) => {
@@ -238,9 +238,7 @@ function Tables() {
             )
         }
     }) : []
-    console.log("noOfItems ", noOfItems);
-    console.log("isLoading ", isLoading);
-
+    console.log("newCityList ", newCityList);
     function onSearch(input) {
         setSearch(input);
     }
@@ -255,18 +253,10 @@ function Tables() {
                               children,
                               ...restProps
                           }) => {
-        console.log("Editable cell")
-        console.log("restProps ", restProps)
         const [loading, setLoading] = useState(false);
-        const [imageUrl, setImageUrl] = useState('');
         const getBase64 = (img, callback) => {
-            console.log("img ", img)
-            console.log("callback ", callback)
             const reader = new FileReader();
-            // reader.addEventListener('load', () => callback(reader.result));
-            // reader.readAsDataURL(img);
             reader.readAsText(img);
-            console.log("result ", reader.result)
         };
 
         const beforeUpload = (file) => {
@@ -288,6 +278,8 @@ function Tables() {
             reader.onload = e => {
                 console.log("onload ", e.target.result);
                 let picture = e.target.result.replace('data:image/jpeg;base64,', '');
+                picture = picture.replace('data:image/jpg;base64,', '');
+                picture = picture.replace('data:image/png;base64,', '');
                 setImageUrl(picture)
             };
             // reader.readAsText(file);
@@ -339,26 +331,15 @@ function Tables() {
         );
         const inputNode = inputType === 'upload' ?
             <Upload
+                accept=".jpg, .jpeg, .png"
                 name="picture"
                 listType="picture-card"
                 className="avatar-uploader"
                 showUploadList={false}
-                // action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                //     action={uploadPicture}
-                // beforeUpload={() => false}
                 beforeUpload={beforeUpload}
-                // onChange={handleChange}
                 maxCount={1}
             >
                 {imageUrl ? (
-                    /* <img
-                         // src={imageUrl}
-                         src={`data:image/png;base64,${imageUrl}`}
-                         alt="avatar"
-                         style={{
-                             width: '100%',
-                         }}
-                     />*/
                     <Avatar.Group>
                         <Avatar
                             className="shape-avatar"
@@ -366,10 +347,6 @@ function Tables() {
                             // size={40}
                             src={`data:image/png;base64,${imageUrl}`}
                         ></Avatar>
-                        {/* <div className="avatar-info">
-                   <Title level={5}>Michael John</Title>
-                   <p>michael@mail.com</p>
-                 </div>*/}
                     </Avatar.Group>
                 ) : (
                     uploadButton
@@ -408,13 +385,6 @@ function Tables() {
                             className="criclebox tablespace mb-24"
                             title="List of Cities"
                             extra={
-                                /*<>
-                                  <Radio.Group onChange={onChange} defaultValue="a">
-                                    <Radio.Button value="a">All</Radio.Button>
-                                    <Radio.Button value="b">ONLINE</Radio.Button>
-                                  </Radio.Group>
-                                </>*/
-
                                 <Search placeholder="input name to search" enterButton="Search" size="large"
                                         loading={isLoading}
                                         onSearch={onSearch}/>
@@ -443,9 +413,9 @@ function Tables() {
                                     current={pageNumber}
                                     showSizeChanger={true}
                                     pageSize={pageSize}
-                                    /* onShowSizeChange={(curent, size) =>
-                                         dispatch(onPageSizeChange(size))
-                                     }*/
+                                    onShowSizeChange={(curent, size) =>
+                                        setPageSize(size)
+                                    }
                                     hideOnSinglePage={false}
                                     showTotal={(total) => {
                                         return `Total ${total} items`;
