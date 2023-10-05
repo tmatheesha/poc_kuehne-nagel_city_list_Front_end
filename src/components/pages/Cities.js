@@ -2,8 +2,8 @@ import React, {useEffect, useState} from "react";
 import {Avatar, Button, Card, Col, Form, Input, message, Popconfirm, Row, Table, Typography, Upload,} from "antd";
 import {useDispatch, useSelector} from "react-redux";
 // Images
-import {loadCitiesAsync, updateCityAsync} from "../redux/reducers/cities/cities.thunk";
-import ViewBoxFooter from "../components/viewBoxFooter";
+import {loadCitiesAsync, updateCityAsync} from "../../redux/reducers/cities/cities.thunk";
+import ViewBoxFooter from "../viewBoxFooter";
 import LoadingOutlined from "@ant-design/icons/lib/icons/LoadingOutlined";
 import PlusOutlined from "@ant-design/icons/lib/icons/PlusOutlined";
 
@@ -21,7 +21,7 @@ const toBase64 = file => new Promise((resolve, reject) => {
     reader.onerror = error => reject(error);
 });
 
-function Tables() {
+function Citiess() {
 
     const dispatch = useDispatch();
 // table code start
@@ -430,4 +430,4 @@ function Tables() {
     );
 }
 
-export default Tables;
+export default Citiess;
